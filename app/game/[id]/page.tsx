@@ -10,6 +10,7 @@ export default function GameDetailPage() {
   
   const [userId, setUserId] = useState('');
   const [zoneId, setZoneId] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
   const [selectedNominal, setSelectedNominal] = useState<{ id: number; name: string; price: string } | null>(null);
 
   const gameNames: Record<string, string> = {
@@ -21,14 +22,12 @@ export default function GameDetailPage() {
 
   const title = gameNames[gameId] || 'Top Up Game';
 
-  // Daftar pilihan nominal
   const nominals = [
     { id: 1, name: '86 Diamonds', price: 'Rp 20.000' },
     { id: 2, name: '172 Diamonds', price: 'Rp 40.000' },
     { id: 3, name: '257 Diamonds', price: 'Rp 60.000' },
   ];
 
-  // Fungsi saat tombol pembayaran ditekan
   const handleCheckout = () => {
     if (!userId) {
       alert('Silakan masukkan ID Pengguna terlebih dahulu!');
@@ -38,30 +37,32 @@ export default function GameDetailPage() {
       alert('Silakan masukkan ID Zona (Server) terlebih dahulu!');
       return;
     }
+    if (!whatsapp) {
+      alert('Silakan masukkan nomor WhatsApp yang bisa dihubungi!');
+      return;
+    }
     if (!selectedNominal) {
       alert('Silakan pilih nominal top up terlebih dahulu!');
       return;
     }
 
-    // Buat kode transaksi unik, lalu arahkan ke halaman /pay/TRX-...
     const trxId = 'TRX-' + Math.floor(100000 + Math.random() * 900000);
     router.push(`/pay/${trxId}`);
   };
 
   return (
     <div className="min-h-screen bg-slate-950 text-white font-sans pb-20 px-4 pt-6 max-w-4xl mx-auto">
-      {/* Tombol Kembali */}
       <Link href="/" className="text-sky-400 text-sm hover:underline mb-4 inline-block">
         ← Kembali ke Beranda
       </Link>
 
       <h1 className="text-2xl font-bold mb-2 text-sky-400">{title}</h1>
-      <p className="text-slate-400 mb-6 text-sm">Lengkapi data akun dan pilih nominal top up Anda di bawah ini.</p>
+      <p className="text-slate-400 mb-6 text-sm">Lengkapi data akun, nomor WhatsApp, dan pilih nominal top up Anda.</p>
 
-      {/* 1. DATA AKUN */}
+      {/* 1. DATA AKUN & KONTAK WHATSAPP */}
       <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl mb-6 shadow-lg">
-        <h2 className="font-semibold text-lg mb-4 text-slate-200">1. Masukkan Data Akun</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <h2 className="font-semibold text-lg mb-4 text-slate-200">1. Masukkan Data Akun & Kontak</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-xs text-slate-400 mb-1">ID Pengguna</label>
             <input 
@@ -85,9 +86,19 @@ export default function GameDetailPage() {
             </div>
           )}
         </div>
+        <div>
+          <label className="block text-xs text-slate-400 mb-1">Nomor WhatsApp (Untuk konfirmasi tagihan)</label>
+          <input 
+            type="text" 
+            placeholder="Contoh: 081234567890" 
+            value={whatsapp}
+            onChange={(e) => setWhatsapp(e.target.value)}
+            className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500 text-white"
+          />
+        </div>
       </div>
 
-      {/* 2. PILIHAN NOMINAL (KINI BISA DIKLIK) */}
+      {/* 2. PILIHAN NOMINAL */}
       <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl mb-6 shadow-lg">
         <h2 className="font-semibold text-lg mb-4 text-slate-200">2. Pilih Isi Ulang Nominal</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -108,6 +119,35 @@ export default function GameDetailPage() {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* 3. RINGKASAN TAGIHAN (BILL SUMMARY) */}
+      <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl mb-6 shadow-lg">
+        <h2 className="font-semibold text-lg mb-4 text-sky-400">3. Ringkasan Tagihan (Bill)</h2>
+        <div className="space-y-2 text-sm text-slate-300">
+          <div className="flex justify-between border-b border-slate-800 pb-2">
+            <span className="text-slate-400">Game:</span>
+            <span className="font-medium text-white">{title}</span>
+          </div>
+          <div className="flex justify-between border-b border-slate-800 pb-2">
+            <span className="text-slate-400">ID Tujuan:</span>
+            <span className="font-medium text-white">
+              {userId ? `${userId} ${zoneId ? `(${zoneId})` : ''}` : '-'}
+            </span>
+          </div>
+          <div className="flex justify-between border-b border-slate-800 pb-2">
+            <span className="text-slate-400">No. WhatsApp:</span>
+            <span className="font-medium text-white">{whatsapp || '-'}</span>
+          </div>
+          <div className="flex justify-between border-b border-slate-800 pb-2">
+            <span className="text-slate-400">Item Dipilih:</span>
+            <span className="font-medium text-white">{selectedNominal ? selectedNominal.name : 'Belum dipilih'}</span>
+          </div>
+          <div className="flex justify-between pt-2 text-base font-bold text-sky-400">
+            <span>Total Pembayaran:</span>
+            <span>{selectedNominal ? selectedNominal.price : 'Rp 0'}</span>
+          </div>
         </div>
       </div>
 
