@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     }
 
     const reference = 'TRX-' + Date.now()
-    const payment_url = `https://simulator.pembayaran-store.com/pay/${reference}`
+    const payment_url = `https://kntg-website.vercel.app/pay/${reference}`
 
     // =========================================================================
     // INTEGRASI WHATSAPP GATEWAY (Fonnte)
